@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- mobile metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- site metas -->
+    <title>Dlotto</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- style css -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- responsive-->
+    <link rel="stylesheet" href="css/responsive.css">
+    <!-- awesome fontfamily -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:700' rel='stylesheet' type='text/css'>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="web3.js"></script>
+    <script type="text/javascript">
+        var contractAddress = '0x225d43f5d38AE4C802ee72f16964a35dA8f8F7d4'; //0xD58f76Fbc4FCb4Ce993ad26a7124c9D87B5C8F24
+        //var contractAddress = '0x23Bc5d5bE9a96ab9B63a8cBD74DE6288f997D1Ff';  >> It's correct version
+        var network = "";
+        let networkDisplay = "";
+        var explorerUrl = "";
+        var userAccount = '';
+        var warning = "";
+        let abi = [     //ABI 
+            
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "no",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amt",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "tp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "buyDlotto",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "cell",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "clearRound",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "internalType": "address",
+                            "name": "user",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Deposit",
+                    "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256[]",
+                            "name": "rewards",
+                            "type": "uint256[]"
+                        }
+                    ],
+                    "name": "lotteryAnnouncement",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "internalType": "address",
+                            "name": "previousOwner",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "internalType": "address",
+                            "name": "newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "OwnershipTransferred",
+                    "type": "event"
+                },
+                {
+                    "inputs": [],
+                    "name": "pause",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "address",
+                            "name": "account",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "Paused",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "totalAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "PayDividend",
+                    "type": "event"
+                },
+                {
+                    "inputs": [],
+                    "name": "payReward",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "renounceOwnership",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "systemDeposit",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "systemWithdraw",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "internalType": "address",
+                            "name": "_from",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "internalType": "address",
+                            "name": "_to",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "_value",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Transfer",
+                    "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "transferOwnership",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "unpause",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "address",
+                            "name": "account",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "Unpaused",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "internalType": "address",
+                            "name": "user",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Withdraw",
+                    "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "all_Buyer",
+                    "outputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "announceReward",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "balance",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "balances",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "buyer",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "number",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "typeoflotto",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getAllBuyer",
+                    "outputs": [
+                        {
+                            "internalType": "address[]",
+                            "name": "",
+                            "type": "address[]"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "Owner",
+                    "outputs": [
+                        {
+                            "internalType": "address payable",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "paused",
+                    "outputs": [
+                        {
+                            "internalType": "bool",
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "rate",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "recipient",
+                    "outputs": [
+                        {
+                            "internalType": "address payable",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "systemDept",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "theCheck",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "totalBalance",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+
+        let KULAPBesuNetworkId = 2027
+    </script>
+    <script type="text/javascript">
+        window.addEventListener('load', function () {
+
+            // Modern dapp browsers...
+            if (window.ethereum) {
+                web3 = new Web3(ethereum);
+
+                try {
+                    // Request account access if needed
+                    ethereum.enable().then(result => {
+                        // Now you can start your app & access web3 freely:
+                        startApp()
+                    })
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+            // Legacy dapp browsers, checking if Web3 has been injected by the browser (Mist/MetaMask)
+            else if (typeof web3 !== 'undefined') {
+                // Use Mist/MetaMask's provider
+                web3 = new Web3(web3.currentProvider);
+
+                // Now you can start your app & access web3 freely:
+                startApp();
+
+            } else {
+                console.log('No web3? You should consider trying MetaMask!')
+                // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+                web3 = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io/v3/YOUR_INFURA_KEY"));
+                //web3 = new Web3( new Web3.providers.HttpProvider( "http://localhost:8545/" ));
+                // web3 = new Web3( new Web3.providers.HttpProvider( "https://rpc.tch.in.th" ));
+
+                // Now you can start your app & access web3 freely:
+                startApp();
+            }
+        })
+
+
+        // Get current network
+        function startApp() {
+            web3.eth.net.getId().then(netId => {
+                // web3.version.getNetwork((err, netId) => {
+                console.log('netId: ' + netId)
+                switch (netId) {
+                    case 1:
+                        network = 'Mainnet';
+                        networkDisplay = network;
+                        warning = 'please switch your network to Kovan or Thai Chain';
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 2:
+                        network = 'Deprecated Morden';
+                        networkDisplay = network;
+                        warning = 'please switch your network to Kovan or Thai Chain';
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 3:
+                        network = 'Ropsten';
+                        networkDisplay = network;
+                        warning = 'please switch your network to Kovan or Thai Chain';
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 4:
+                        network = 'Rinkeby';
+                        networkDisplay = network;
+                        contractAddress = '0x6075b70b4f94af25e047fac6a538ea06a5206bca';
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 5:
+                        network = 'Goerli';
+                        networkDisplay = network;
+                        contractAddress = '0x225d43f5d38AE4C802ee72f16964a35dA8f8F7d4'; //
+                        //contractAddress = '0x23Bc5d5bE9a96ab9B63a8cBD74DE6288f997D1Ff'; //
+
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 7:
+                        network = 'Thai Chain';
+                        networkDisplay = network;
+                        contractAddress = '0x0898424ddf8f9478aad9f2280a6480f1858ad1c6';
+                        explorerUrl = "https://exp.tch.in.th/tx/"
+                        break
+                    case 42:
+                        network = 'Kovan';
+                        networkDisplay = network;
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 420:
+                        network = 'Goerli-Optimism';
+                        networkDisplay = 'Goerli Optimism';
+                        contractAddress = '0x02302b985d82a3f8dd9ba9d0bcea620bbcbeec63';
+                        explorerUrl = "https://" + network.toLowerCase() + ".etherscan.io/tx/"
+                        break
+                    case 1337:
+                        network = 'Kovan - Optimism';
+                        networkDisplay = '<strong>Kovan Optimism</strong><br/>(Level 2 Ethereum)';
+                        contractAddress = '0xE6dCD042c4dDaC0f390A7B1CB8B4D60DD20b6338';
+                        explorerUrl = "https://kovan-l2-explorer.surge.sh/tx/";
+                        break
+                    case 5777:
+                        network = 'Ganache';
+                        networkDisplay = network;
+                        break
+                    case KULAPBesuNetworkId:
+                        network = 'KULAP Besu'
+                        networkDisplay = '<strong>KULAP Besu</strong><br/>(Enterprise Blockchain)';
+                        contractAddress = '0x5924aC8829CE51674415Ae619C796C12815010eF';
+                        explorerUrl = "http://besu1.kulap.io/tx/";
+                        break
+                    default:
+                        network = 'Unknown';
+                        networkDisplay = network;
+                        warning = 'please switch your network to Kovan or Thai Chain';
+                }
+                $("#eth_network").html(networkDisplay);
+                $("#warning").text(warning);
+                $("#candidateContractAddress").val(contractAddress);
+                $("#DlottoContractAddress").val(contractAddress);
+
+
+                web3.eth.getAccounts().then(accounts => {
+                    userAccount = accounts[0];
+                    $("#eth_address").text(userAccount);
+
+                    reloadInfo();
+                })
+            })
+        }
+
+        function reloadInfo() {
+
+            // Wallet
+            try {
+                getBalance();
+            }
+            catch (err) {
+                console.log(err);
+            }
+
+         //   showCandidateCount();
+
+            // Candidate contract
+         //   displayCandidates();
+
+            //Subscribe to Vote Received Event
+         /*   let contract = getVotingContract();
+            contract.events.VoteReceived()
+                .on('data', function (event) {
+                    $("<div>" + JSON.stringify(event) + "</div>").appendTo("#events");
+                })
+                .on('changed', function (event) {
+                    // remove event from local database
+                })
+                .on('error', console.error);
+        }
+*/
+        }
+        // Get block info
+        function getBlock() {
+            web3.eth.getBlock(48, function (error, result) {
+                if (!error) {
+                    console.log(JSON.stringify(result));
+                    $("#balance").html(JSON.stringify(result));
+                } else {
+                    console.error(error);
+                }
+            })
+        }
+
+        // Get account balance
+        function getBalance() {
+            web3.eth.getBalance(userAccount).then(result => {
+                $("#balance").html(web3.utils.fromWei(result));
+            }); // getbalance account
+        }
+
+        // Get Katin name
+        function showCandidateCount() {
+            getCandidateCount(function (number) {
+                console.log(number);
+                $("#candidateCount").text(number);
+            });
+        }
+
+        // Get katin token contract
+        function getVotingContract() {
+            let contract = new web3.eth.Contract(abi, contractAddress)
+
+            return contract;
+        }
+    </script>
+    
+    <!-- Candidate contract -->
+    <script type="text/javascript">
+        // Get number of candidates
+        /*
+        function getCandidateCount(callback) {
+            let contract = getVotingContract();
+            contract.methods.candidateCount().call().then(result => {
+                console.log('getCandidateCount: ' + result);
+                callback(result);
+            });
+        }
+*/
+        // Get Candidate name
+        /*
+        function getCandidateName(index, callback) {
+            let contract = getVotingContract();
+            contract.methods.candidateList(index).call().then(name => {
+                console.log(name);
+                callback(name);
+            });
+        }
+        */
+        // ADD Candidate name
+        /*
+        async function addCandidate() {
+            let c_name = $.trim($("#candidateName").val());
+
+            if (c_name == "") {
+                alert("The name cannot be a null value!");
+                return false;
+            }
+
+            console.log("add new a cadidate name :" + c_name);
+            let contract = getVotingContract();
+
+            let options = {
+                from: userAccount
+            }
+            
+
+            // Send a transaction to blockchain
+            let result = await contract.methods.addNewCandidate(c_name).send(options)
+            reloadCandidateContract()
+        }
+        */
+                // Buy Lottery 
+        async function buyDlotto() {
+
+
+                var dl_number = +document.getElementById("number").value;
+                let dl_amount = +document.getElementById("amount").value;
+                let dl_type = +document.getElementById("typeoflotto").value;
+
+                if (dl_number==null|| dl_amount==null|| dl_type == null) {
+                     alert("The name cannot be a null value!");
+                        return false;
+                    }
+
+                    console.log("buy Dlotto no : " + typeof(dl_number) + "amount : "+ typeof(dl_amount) + "type : "+ typeof(dl_type));
+                    let contract = getAllBuyer();
+
+                    let options = {
+                        from: userAccount
+                    }
+
+                        // Send a transaction to blockchain
+                    let result = await contract.methods.buyDlotto(dl_number,dl_amount,dl_type).send(options)
+                    reloadDlottoContract()
+        }        
+
+        function getAllBuyer() {
+            let contract = new web3.eth.Contract(abi, contractAddress)
+
+                return contract;
+        }
+
+        function removeItem(index) {
+            console.log('index', index);
+
+            let contract = getVotingContract();
+            contract.methods.candidateList(index).call().then(name => {
+                let options = {
+                    from: userAccount
+                }
+
+                // Send a transaction to blockchain
+                contract.methods.removeItem(index).send(options)
+                    .on('error', (error) => {
+                        console.error(error)
+                        $("#status_value").text('Failed').css("color", "red");
+
+                        // Hide progress bar
+                        $("#candidate_" + index + "_progress").slideUp();
+                    })
+
+                    // Transaction already saved to mempool
+                    .on('transactionHash', (transactionHash) => {
+                        // Show tx hash
+                        console.log(transactionHash)
+
+                        let link = explorerUrl + transactionHash
+                        $("#tx_link").attr("href", link)
+                        $("#tx_link").text(link)
+
+                        // Clear status
+                        $("#status_value").text('-');
+
+                        // Show progress bar
+                        $("#candidate_" + index + "_progress").slideDown();
+                    })
+
+                    // Transaction got confirmed
+                    .on('confirmation', (confirmationNumber, receipt) => {
+                        console.log('confirmationNumber', confirmationNumber)
+                        console.log(receipt);
+                        $("#status_value").text('Success').css("color", "green");
+
+                        // Refresh
+                        displayCandidateDetail(index);
+
+                        // Hide progress bar
+                        $("#candidate_" + index + "_progress").slideUp();
+
+                        callback(ok);
+                    })
+            });
+        }
+
+        // Get Candidate total vote
+        function getCandidateTotalVote(index, callback) {
+            let contract = getVotingContract();
+            contract.methods.candidateList(index).call().then(name => {
+                contract.methods.totalVotesFor(name).call().then(ok => {
+                    console.log(ok);
+                    callback(ok);
+                });
+            });
+
+        }
+
+        // Vote
+        function voteAt(index) {
+            console.log('index', index);
+
+            let contract = getVotingContract();
+            contract.methods.candidateList(index).call().then(name => {
+                let options = {
+                    from: userAccount
+                }
+
+                // Send a transaction to blockchain
+                contract.methods.voteForCandidate(name).send(options)
+                    .on('error', (error) => {
+                        console.error(error)
+                        $("#status_value").text('Failed').css("color", "red");
+
+                        // Hide progress bar
+                        $("#candidate_" + index + "_progress").slideUp();
+                    })
+
+                    // Transaction already saved to mempool
+                    .on('transactionHash', (transactionHash) => {
+                        // Show tx hash
+                        console.log(transactionHash)
+
+                        let link = explorerUrl + transactionHash
+                        $("#tx_link").attr("href", link)
+                        $("#tx_link").text(link)
+
+                        // Clear status
+                        $("#status_value").text('-');
+
+                        // Show progress bar
+                        $("#candidate_" + index + "_progress").slideDown();
+                    })
+
+                    // Transaction got confirmed
+                    .on('confirmation', (confirmationNumber, receipt) => {
+                        console.log('confirmationNumber', confirmationNumber)
+                        console.log(receipt);
+                        $("#status_value").text('Success').css("color", "green");
+
+                        // Refresh
+                        displayCandidateDetail(index);
+
+                        // Hide progress bar
+                        $("#candidate_" + index + "_progress").slideUp();
+
+                        callback(ok);
+                    })
+            });
+        }
+
+        // Load candidate detail
+        function displayCandidateDetail(index) {
+            // Name
+            getCandidateName(index, function (name) {
+                $("#candidate_" + index + "_name").text(name);
+            });
+
+            // Total vote
+            getCandidateTotalVote(index, function (total) {
+                $("#candidate_" + index + "_total_vote").text(total);
+            });
+        }
+
+        function cloneCandidateDetail(index) {
+            let a = $("#candidate_copy").clone();
+
+            $(a).find(".candidate_name").attr("id", "candidate_" + index + "_name");
+            $(a).find(".candidate_total_vote").attr("id", "candidate_" + index + "_total_vote");
+            $(a).find(".candidate_vote_button").attr("onClick", "javascript:voteAt(" + index + ");");
+            $(a).find(".candidate_vote_button").attr("onClick", "javascript:removeItem(" + index + ");");
+            $(a).find(".candidate_progress").attr("id", "candidate_" + index + "_progress");
+
+            $(a).appendTo("#more_candidates");
+        }
+
+        // Show candidates information
+        function displayCandidates() {
+            getCandidateCount(function (count) {
+                for (var i = 0; i < count; i++) {
+                    cloneCandidateDetail(i);
+                    displayCandidateDetail(i);
+                }
+            });
+        }
+
+        function reloadCandidateContract() {
+            let newContractAddress = $("#candidateContractAddress").val()
+            if (!web3.utils.isAddress(newContractAddress)) {
+                console.error(newContractAddress + ' is not a valid address!')
+                return;
+            }
+
+            // Clear candidates
+            $("#more_candidates").html('')
+
+            // Fetch candidates from new contract
+            contractAddress = newContractAddress;
+            reloadInfo()
+        }
+    function reloadDlottoContract() {
+        let newContractAddress = $('#DlottoContractAddress').val()
+        if (!web3.utils.isAddress(newContractAddress)) {
+            console.error(newContractAddress + ' is not a valid address!')
+            return;
+        }
+
+        // Clear candidates
+        $("#more_candidates").html('')
+
+        // Fetch candidates from new contract
+        contractAddress = newContractAddress;
+        reloadInfo()
+    }
+
+        function openContractOnEtherScan() {
+            let address = $("#candidateContractAddress").val()
+            let url = 'https://' + network + '.etherscan.io/address/' + address
+            window.open(url, '_blank');
+        }
+
+        function openUserAddressOnEtherScan() {
+            let url = 'https://' + network + '.etherscan.io/address/' + userAccount
+            window.open(url, '_blank');
+        }
+        //Time 
+        
+
+            (function () {
+                const second = 1000,
+                    minute = second * 60,
+                    hour = minute * 60,
+                    day = hour * 24;
+
+                //I'm adding this section so I don't have to keep updating this pen every year :-)
+                //remove this if you don't need it
+                let today = new Date(),
+                    dd = String(today.getDate()).padStart(2, "0"),
+                    mm = String(today.getMonth() + 1).padStart(2, "0"),
+                    yyyy = today.getFullYear(),
+                    nextYear = yyyy + 1,
+                    dayMonth = "09/30/",
+                    lottoDay = dayMonth + yyyy;
+
+                today = mm + "/" + dd + "/" + yyyy;
+                if (today > lottoDay) {
+                    lottoDay = dayMonth + nextYear;
+                }
+                //end
+
+                const countDown = new Date(lottoDay).getTime(),
+                    x = setInterval(function () {
+
+                        const now = new Date().getTime(),
+                            distance = countDown - now;
+
+
+                        document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
+                            document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
+                            document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+
+                        //do something later when date is reached
+                        if (distance < 0) {
+                            document.getElementById("headline").innerText = "It's Time For Lotto!";
+                            document.getElementById("countdown").style.display = "none";
+                            document.getElementById("content").style.display = "block";
+                            clearInterval(x);
+                        }
+                        //seconds
+                    }, 0)
+            }());    
+
+    </script>
+    </script>
+    </head>
+<!-- body -->
+
+<body class="main-layout">
+    <!-- loader  -->
+    <div class="loader_bg">
+        <div class="loader"><img src="images/loading.gif" alt="" /></div>
+    </div>
+
+    <!-- end loader -->
+    <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a class="active" href="DLotto.html">Home</a>
+        <a href="DLotto.html"><h2>Dlotto</h2></a>
+        <!--
+        <a href="index.html">Searvices</a>
+        <a href="index.html">Testimonial</a>
+        <a href="index.html">Works</a>
+        <a href="index.html">Contact</a>
+        -->
+    </div>
+    <!-- header -->
+    <header>
+        <!-- header inner -->
+        <div class="head-top">
+            <div class="container-fluid">
+                <div class="row d_flex">
+                    <div class="col-sm-3">
+                        <div class="logo">
+                            <a href="DLotto.html"><h1>Dlotto</h1></a>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                    </div> 
+                    <div class="col-sm-4">
+                        <ul class="email text_align_right">
+                            <li class="d_none"><a href="Javascript:void(0)"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+                            <li class="d_none"> <a href="Javascript:void(0)"><i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"></i></a> </li>
+                            <li>
+                                <button class="openbtn" onclick="openNav()"><img src="images/menu_btn.png"></button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- end header -->
+    <!-- start slider section -->
+    <div id="top_section" class=" banner_main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#myCarousel" data-slide-to="1"></li>
+                            <li data-target="#myCarousel" data-slide-to="2"></li>
+                        </ol>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="container-fluid">
+                                    <div class="carousel-caption relative">
+                                        <div class="row d_flex">
+                                            <div class="col-md-6">
+                                                <div class="con_img">
+                                                    <figure><img class="img_responsive" src="images/top_img.png" alt="#" /></figure>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="bluid">
+                                                    <h1><br> DLOTTO Online </h1>
+                                                    <h2>Open 24 Hour.</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="testimonial">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="border_testi">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="container2">                                                                
+                                                                    <div id="countdown">
+                                                                        <ul>
+                                                                            <li><span id="hours"></span>Hours</li>
+                                                                            <li><span id="minutes"></span>Minutes</li>
+                                                                            <li><span id="seconds"></span>Seconds</li>
+                                                                        </ul>
+                                                                    </div>
+
+                                </div>
+                                <div class="titlepage text_align_center"> 
+                                    <div class="titlepage text_align_center">
+
+                                        <div class="body2">
+                                            <div class="input-container">
+                                                <h1>Lucky No: </h1>
+                                                <input id="number" class="input" style="width:15em;" type="text" placeholder="Ex. 12345" />  
+                                                <h1>Amount : </h1>
+                                                <input id="amount" class="input" style="width:15em;" type="text" placeholder="Ex. 1" />
+                                                <h1>Type : </h1>
+                                                <form action="/action_page.php" method="get" >
+                       
+                                                    <select id="typeoflotto" class="select-selected" style="width:100px;">
+                                                        <option value=1>1st Prize</option>
+                                                        <option value=2>2nd Prize</option>
+                                                        <option value=3>3rd Prize</option>
+                                                        <option value=4>4th Prize</option>
+                                                        <option value=5>5th Prize</option>
+                                                        <option value=6>3 ตัวท้าย</option>
+                                                        <option value=7>2 ตัวท้าย</option>
+                                                    </select>
+                                                </form>                               
+                                            </div>                                                                   
+                                        </div>
+                                        <div class="input-container">
+                                        <button class="bnSubmit" style="font-size:16px;"
+                                            onClick="javascript:buyDlotto();"><h1 class="h5">BUY</h1></button>
+                                        </div>
+                                        <div class="row d_flex">
+                                            <table class="border_testi">
+                                                
+                                                
+                                                <tbody class="container3">
+                                                    <tr>
+                                                        <td class="table-label"><h5>ACCOUNT:</h5></td>
+                                                        <td class="table-value">
+                                                            <span id="eth_address"></span>
+                                                            <a href="javascript:openUserAddressOnEtherScan();" target="_blank" style="margin-left: 8px;">
+                                                               
+                                                            </a>
+                                                        </td>
+                                                       
+                                                       
+                                                        <td class="table-label"><h5>ETH:</h5></td>
+                                                        <td class="table-value"><span id="balance"></span><a href="javascript:openUserAddressOnEtherScan();" target="_blank" style="margin-left: 8px;"></td>
+                                                    </tr>
+
+                                                </tbody>
+                                               
+                                            </table>  
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ <!--   <div class="wallet">
+        <div class="testomoniam_text text_align_center"> <h1>มาโหวตกัน</h1></div>
+        
+        <div class="container-fluid" >
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div id="wa_hover" class="wallet_box text_align_center">
+                        <i><img src="images/whatever.png" alt="#" onClick="javascript:reloadCandidateContract();"></i>                    
+                    </div>
+                    
+                </div>
+                <div ></div>
+                <div class="col-lg-3 col-sm-6">
+                    <div id="wa_hover" class="wallet_box text_align_center">
+                        <i><img src="images/Dontknow.png" alt="#" onClick="javascript:reloadCandidateContract();"/></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div id="wa_hover" class="wallet_box text_align_center">
+                        <i><img src="images/Uptoyou.png" alt="#" onClick="javascript:reloadCandidateContract();"/></i>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div> -->
+  <!-- Announce Reward --> 
+<div class="testimonial">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="border_testi">
+                    <div class="row">
+                        <div class="col-md-12">
+                          
+<div id="score">
+    <h2>Football Score</h2>
+    <p>Team A: <span id="team-a-score">3</span></p>
+    <p>Team B: <span id="team-b-score">2</span></p>
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+</div>
+<!--Member Group-->
+    <div class="testimonial">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="border_testi">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="titlepage text_align_center">
+                                    <h2>Co-Founder DLotto</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row d_flex">
+                            <div class="col-md-10 offset-md-1">
+                                <div id="testimo" class="carousel slide our_testimonial" data-ride="carousel">
+                                    <ol class="carousel-indicators">
+                                        <li data-target="#testimo" data-slide-to="0" class="active"></li>
+                                        <li data-target="#testimo" data-slide-to="1"></li>
+                                        <li data-target="#testimo" data-slide-to="2"></li>
+                                    </ol>
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <div class="container">
+                                                <div class="carousel-caption posi_in">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="testomoniam_text text_align_center">
+                                                               <!---- <i><img src="images/clint.jpg"  alt="#"/></i> -->
+                                                                <img src="images/PPum.png" alt="#" />
+                                                                <h3>Piyathida Malayasakul</h3>
+                                                                <span>2130731303006</span>
+                                                               
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="testomoniam_text text_align_left">
+                                                                <h1><br>CEO</h1>
+                                                                <p> Be the change you wish to see in the world. Be the change you wish to see in the world
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="carousel-item">
+                                            <div class="container">
+                                                <div class="carousel-caption posi_in">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="testomoniam_text text_align_center">
+                                                                <img src="images/Preaw.png" alt="#" />
+                                                                <h3>Worada Limpreedeekul</h3>
+                                                                <span>2130731303007</span>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="testomoniam_text text_align_left">
+                                                                <h1><br>CIO</h1>
+                                                                <p>There are two ways to live your life. One is as though nothing is a miracle. </p>
+                                                                <p>The other is as though everything is a miracle</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="carousel-item">
+                                            <div class="container">
+                                                <div class="carousel-caption posi_in">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="testomoniam_text text_align_center">
+                                                                <img src="images/Buum.png" alt="#" />
+                                                                <h3>Phatchara Narinrat</h3>
+                                                                <span>2130731303002</span>
+                                                               
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="testomoniam_text text_align_left" style="font: size 50px;">
+                                                                <h1> <br>CTO</h1>
+                                                                <p>There is only one corner of the universe you can be certain of improving, </p>
+                                                                <p>and that’s your own self.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="carousel-control-prev" href="#testimo" role="button" data-slide="prev">
+                                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#testimo" role="button" data-slide="next">
+                                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <!-- end testimonial -->
+    <!-- works 
+    <div class="works">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="titlepage text_align_center">
+                        <h2>How It Works</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="works_vedio">
+                        <figure><img class="img_responsive" src="images/work.png" alt="#"></figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    -->
+    <!-- works -->
+    <!-- contact
+    <div class="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="titlepage text_align_center">
+                        <h2>Requeste A call Back</h2>
+                    </div>
+                </div>
+                <div class=" col-md-10 offset-md-1">
+                    <form id="request" class="main_form">
+                        <div class="row">
+                            <div class="col-md-6 ">
+                                <input class="contactus" placeholder="Full Name" type="type" name="Full Name">
+                            </div>
+                            <div class="col-md-6">
+                                <input class="contactus" placeholder="Email" type="type" name="Email">
+                            </div>
+                            <div class="col-md-6">
+                                <input class="contactus" placeholder="Phone number" type="type" name="Phone number">
+                            </div>
+                            <div class="col-md-6">
+                                <textarea class="textarea" placeholder="Message" type="type" Message="Name"></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="send_btn">Send</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+    <!-- end contact -->
+    <!-- footer -->
+    <footer>
+        <div class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="logo_bottom" href="DLotto.html">DLOTTO</a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                  <div class="Informa conta ">
+                     <h3>Contact Us</h3>
+                     <ul>
+                        <li> <a href="Javascript:void(0) "> <i class="fa fa-map-marker " aria-hidden="true "></i> Location
+                           </a>
+                        </li>
+                        <li> <a href="Javascript:void(0) "><i class="fa fa-phone " aria-hidden="true "></i> Call +01 1234567890
+                           </a>
+                        </li>
+                        <li> <a href="Javascript:void(0) "> <i class="fa fa-envelope " aria-hidden="true "></i> b.p.narinrat@gmail.com
+                           </a>
+                        </li>
+                     </ul>
+                     <ul>
+                        <li>Readable content of                              
+                        </li>
+                        <li>This page created for                           
+                        </li>
+                        <li>study to learn how to                          
+                        </li>
+                        <li>build Decentralize Application                             
+                        </li>
+                        
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3 col-sm-6 ">
+                        <div class="Informa helpful">
+                            <h3>Useful Link</h3>
+                            <ul>
+                                <li>Readable content of
+                                </li>
+                                <li>This page created for
+                                </li>
+                                <li>study to learn how to
+                                </li>
+                                <li>build Decentralize Application
+                                </li>
+                                <li>when looking at its
+                                </li>
+                                <li>layout
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6" ">
+                  <div class="Informa ">
+                     <h3>Offices</h3>
+                     <ul>
+                        <li>Readable content of
+                        </li>
+                        <li>This page created for
+                        </li>
+                        <li>study to learn how to
+                        </li>
+                        <li>build Decentralize Application
+                        </li>
+                        <li>when looking at its                         
+                        </li>
+                        <li>layout                          
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="col-md-3 col-sm-6 ">
+                  <div class="Informa ">
+                     <h3>Newsletter</h3>
+                     <form class="newslatter_form ">
+                        <input class="ente " placeholder="Enter your email " type="text " name="Enter your email ">
+                        <button class="subs_btn ">Subscribe</button>
+                     </form>
+                  </div>
+               </div>
+            </div>
+            <div class="copyright text_align_center ">
+               <div class="container ">
+                  <div class="row ">
+                     <div class="col-md-12 ">
+                        <p>© 2022 All Rights Reserved. Design by   <a href="https://html.design/ "> Free Html Template</a></p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      </footer>
+      <!-- end footer -->
+      <!-- Javascript files-->
+      <script src="js/jquery.min.js "></script>
+      <script src="js/bootstrap.bundle.min.js "></script>
+      <script src="js/jquery-3.0.0.min.js "></script>
+      <script src="js/custom.js "></script>
+   </body>
+</html>
